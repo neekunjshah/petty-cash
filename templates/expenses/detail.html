@@ -1,0 +1,264 @@
+{% extends "base.html" %}
+
+{% block title %}Expense #{{ expense.id }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="{{ url_for('expense_list') }}">Expenses</a></li>
+                    <li class="breadcrumb-item active">Expense #{{ expense.id }}</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8">
+            <!-- Expense Details -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0">
+                        <i class="bi bi-receipt"></i> Expense #{{ expense.id }}
+                    </h4>
+                    <span class="badge badge-{{ expense.status }} fs-6">
+                        {{ expense.status.upper() }}
+                    </span>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <strong>Created By:</strong><br>
+                            {{ expense.creator.full_name }} ({{ expense.creator.role }})
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Date Created:</strong><br>
+                            {{ expense.created_at.strftime('%Y-%m-%d %H:%M') }}
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <div class="mb-3">
+                        <strong>Purpose:</strong>
+                        <p class="mt-2">{{ expense.purpose }}</p>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <strong>Amount:</strong>
+                            <p class="text-success fs-3 fw-bold mt-2">
+                                ${{ "%.2f"|format(expense.amount) }}
+                            </p>
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Recipient:</strong>
+                            <p class="fs-5 mt-2">{{ expense.recipient_name }}</p>
+                        </div>
+                    </div>
+
+                    {% if expense.approved_by %}
+                    <hr>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <strong>Approved By:</strong><br>
+                            {{ expense.approved_by.full_name }}
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Approval Date:</strong><br>
+                            {{ expense.approved_at.strftime('%Y-%m-%d %H:%M') if expense.approved_at else 'N/A' }}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    {% if expense.rejection_reason %}
+                    <hr>
+                    <div class="alert alert-danger">
+                        <strong>Rejection Reason:</strong><br>
+                        {{ expense.rejection_reason }}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Signatures -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-secondary text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-pen"></i> Signatures
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        {% if expense.recipient_signature %}
+                        <div class="col-md-4 text-center mb-3">
+                            <h6 class="text-muted">Recipient</h6>
+                            <img src="{{ url_for('static', filename='signatures/' + expense.recipient_signature) }}"
+                                 alt="Recipient Signature" class="img-fluid border rounded p-2 bg-white">
+                            <p class="mt-2 small">{{ expense.recipient_name }}</p>
+                        </div>
+                        {% endif %}
+
+                        {% if expense.employee_signature %}
+                        <div class="col-md-4 text-center mb-3">
+                            <h6 class="text-muted">Employee</h6>
+                            <img src="{{ url_for('static', filename='signatures/' + expense.employee_signature) }}"
+                                 alt="Employee Signature" class="img-fluid border rounded p-2 bg-white">
+                            <p class="mt-2 small">{{ expense.creator.full_name }}</p>
+                        </div>
+                        {% endif %}
+
+                        {% if expense.senior_signature %}
+                        <div class="col-md-4 text-center mb-3">
+                            <h6 class="text-muted">Senior (Approved)</h6>
+                            <img src="{{ url_for('static', filename='signatures/' + expense.senior_signature) }}"
+                                 alt="Senior Signature" class="img-fluid border rounded p-2 bg-white">
+                            <p class="mt-2 small">{{ expense.approved_by.full_name if expense.approved_by else 'N/A' }}</p>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    {% if expense.has_all_signatures %}
+                    <div class="alert alert-success mt-3">
+                        <i class="bi bi-check-circle"></i> All signatures collected
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Senior Approval Section -->
+            {% if current_user.is_senior and expense.status == 'pending' %}
+            <div class="card shadow-sm mb-4 border-warning">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0">
+                        <i class="bi bi-clipboard-check"></i> Approval Required
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <!-- Approve Form -->
+                    <form method="POST" action="{{ url_for('expense_approve', expense_id=expense.id) }}" class="mb-3">
+                        <h6>Approve Expense</h6>
+                        <p class="text-muted small">Add your signature to approve this expense</p>
+
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <canvas id="senior-canvas" class="signature-canvas w-100" style="height: 150px;"></canvas>
+                                <input type="hidden" id="senior_signature" name="senior_signature">
+                                <div class="mt-2">
+                                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="clearCanvas('senior')">
+                                        <i class="bi bi-x-circle"></i> Clear
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-success btn-lg w-100" onclick="return validateApproval()">
+                            <i class="bi bi-check-circle"></i> Approve Expense
+                        </button>
+                    </form>
+
+                    <hr>
+
+                    <!-- Reject Form -->
+                    <h6>Reject Expense</h6>
+                    <form method="POST" action="{{ url_for('expense_reject', expense_id=expense.id) }}">
+                        <div class="mb-3">
+                            <textarea class="form-control" name="rejection_reason" rows="3"
+                                      placeholder="Reason for rejection..." required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-danger w-100"
+                                onclick="return confirm('Are you sure you want to reject this expense?')">
+                            <i class="bi bi-x-circle"></i> Reject Expense
+                        </button>
+                    </form>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-md-4">
+            <!-- Actions -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-light">
+                    <h6 class="mb-0">Actions</h6>
+                </div>
+                <div class="list-group list-group-flush">
+                    <a href="{{ url_for('export_pdf', expense_id=expense.id) }}"
+                       class="list-group-item list-group-item-action">
+                        <i class="bi bi-file-pdf"></i> Export to PDF
+                    </a>
+                    <a href="{{ url_for('expense_list') }}"
+                       class="list-group-item list-group-item-action">
+                        <i class="bi bi-arrow-left"></i> Back to List
+                    </a>
+                </div>
+            </div>
+
+            <!-- Status Timeline -->
+            <div class="card shadow-sm">
+                <div class="card-header bg-light">
+                    <h6 class="mb-0">Status Timeline</h6>
+                </div>
+                <div class="card-body">
+                    <div class="timeline">
+                        <div class="mb-3">
+                            <i class="bi bi-check-circle text-success"></i>
+                            <strong>Created</strong><br>
+                            <small class="text-muted">{{ expense.created_at.strftime('%Y-%m-%d %H:%M') }}</small>
+                        </div>
+
+                        {% if expense.status == 'pending' %}
+                        <div class="mb-3">
+                            <i class="bi bi-clock text-warning"></i>
+                            <strong>Pending Approval</strong><br>
+                            <small class="text-muted">Waiting for senior review</small>
+                        </div>
+                        {% endif %}
+
+                        {% if expense.status == 'approved' %}
+                        <div class="mb-3">
+                            <i class="bi bi-check-circle-fill text-success"></i>
+                            <strong>Approved</strong><br>
+                            <small class="text-muted">{{ expense.approved_at.strftime('%Y-%m-%d %H:%M') if expense.approved_at else 'N/A' }}</small>
+                        </div>
+                        {% endif %}
+
+                        {% if expense.status == 'rejected' %}
+                        <div class="mb-3">
+                            <i class="bi bi-x-circle-fill text-danger"></i>
+                            <strong>Rejected</strong><br>
+                            <small class="text-muted">{{ expense.updated_at.strftime('%Y-%m-%d %H:%M') }}</small>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+{% if current_user.is_senior and expense.status == 'pending' %}
+<script src="{{ url_for('static', filename='js/signature.js') }}"></script>
+<script>
+    // Initialize senior signature canvas
+    initSignatureCanvas('senior');
+
+    function validateApproval() {
+        const seniorSig = document.getElementById('senior_signature').value;
+
+        if (!seniorSig || seniorSig === '') {
+            alert('Please add your signature to approve');
+            return false;
+        }
+
+        return confirm('Confirm approval of this expense?');
+    }
+</script>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block title %}All Expenses{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <h1 class="display-6 fw-bold">
+                <i class="bi bi-receipt"></i> All Expenses
+            </h1>
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <div class="col-md-12">
+            <div class="btn-group" role="group">
+                <a href="?status=all" class="btn btn-outline-primary {{ 'active' if status == 'all' else '' }}">
+                    All
+                </a>
+                <a href="?status=draft" class="btn btn-outline-secondary {{ 'active' if status == 'draft' else '' }}">
+                    Draft
+                </a>
+                <a href="?status=pending" class="btn btn-outline-warning {{ 'active' if status == 'pending' else '' }}">
+                    Pending
+                </a>
+                <a href="?status=approved" class="btn btn-outline-success {{ 'active' if status == 'approved' else '' }}">
+                    Approved
+                </a>
+                <a href="?status=rejected" class="btn btn-outline-danger {{ 'active' if status == 'rejected' else '' }}">
+                    Rejected
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            {% if expenses %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Purpose</th>
+                            <th>Amount</th>
+                            <th>Recipient</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for expense in expenses %}
+                        <tr>
+                            <td>#{{ expense.id }}</td>
+                            <td>{{ expense.purpose[:50] }}{% if expense.purpose|length > 50 %}...{% endif %}</td>
+                            <td class="fw-bold text-success">${{ "%.2f"|format(expense.amount) }}</td>
+                            <td>{{ expense.recipient_name }}</td>
+                            <td><span class="badge badge-{{ expense.status }}">{{ expense.status.upper() }}</span></td>
+                            <td>{{ expense.created_at.strftime('%Y-%m-%d') }}</td>
+                            <td>
+                                <a href="{{ url_for('expense_detail', expense_id=expense.id) }}"
+                                   class="btn btn-sm btn-primary">
+                                    <i class="bi bi-eye"></i> View
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="alert alert-info">
+                <i class="bi bi-info-circle"></i> No expenses found.
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

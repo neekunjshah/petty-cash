@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+
+{% block title %}Create Expense{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">
+                        <i class="bi bi-plus-circle"></i> Create New Expense
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('expense_create') }}">
+                        <div class="mb-3">
+                            <label for="purpose" class="form-label">Purpose *</label>
+                            <textarea class="form-control" id="purpose" name="purpose" rows="3"
+                                      required placeholder="What is this expense for?"></textarea>
+                            <div class="form-text">Describe the reason for this expense</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="amount" class="form-label">Amount ($) *</label>
+                            <input type="number" class="form-control" id="amount" name="amount"
+                                   step="0.01" min="0.01" required placeholder="0.00">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="recipient_name" class="form-label">Recipient Name *</label>
+                            <input type="text" class="form-control" id="recipient_name" name="recipient_name"
+                                   required placeholder="Who received the money?">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Recipient Signature *</label>
+                            <div class="card">
+                                <div class="card-body">
+                                    <canvas id="recipient-canvas" class="signature-canvas w-100" style="height: 150px;"></canvas>
+                                    <input type="hidden" id="recipient_signature" name="recipient_signature">
+                                    <div class="mt-2">
+                                        <button type="button" class="btn btn-sm btn-outline-secondary" onclick="clearCanvas('recipient')">
+                                            <i class="bi bi-x-circle"></i> Clear
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-text">Recipient must sign here</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Your Signature (Employee) *</label>
+                            <div class="card">
+                                <div class="card-body">
+                                    <canvas id="employee-canvas" class="signature-canvas w-100" style="height: 150px;"></canvas>
+                                    <input type="hidden" id="employee_signature" name="employee_signature">
+                                    <div class="mt-2">
+                                        <button type="button" class="btn btn-sm btn-outline-secondary" onclick="clearCanvas('employee')">
+                                            <i class="bi bi-x-circle"></i> Clear
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-text">Sign here to confirm</div>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg" onclick="return validateSignatures()">
+                                <i class="bi bi-send"></i> Submit for Approval
+                            </button>
+                            <a href="{{ url_for('dashboard') }}" class="btn btn-outline-secondary">
+                                <i class="bi bi-x-circle"></i> Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/signature.js') }}"></script>
+<script>
+    // Initialize signature canvases
+    initSignatureCanvas('recipient');
+    initSignatureCanvas('employee');
+
+    function validateSignatures() {
+        const recipientSig = document.getElementById('recipient_signature').value;
+        const employeeSig = document.getElementById('employee_signature').value;
+
+        if (!recipientSig || recipientSig === '') {
+            alert('Please add recipient signature');
+            return false;
+        }
+
+        if (!employeeSig || employeeSig === '') {
+            alert('Please add your signature');
+            return false;
+        }
+
+        return true;
+    }
+</script>
+{% endblock %}
