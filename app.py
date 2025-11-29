@@ -466,6 +466,10 @@ if __name__ == '__main__':
     # Ensure upload folder exists
     os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
+    # Ensure instance folder exists for SQLite database
+    instance_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'instance')
+    os.makedirs(instance_path, exist_ok=True)
+
     # Initialize database
     init_db()
 
