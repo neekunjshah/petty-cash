@@ -12,8 +12,13 @@ class Config:
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'dev-secret-key-change-in-production'
 
     # Database
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or \
-        'sqlite:///' + os.path.join(basedir, 'instance', 'pettycash.db')
+    # Use /tmp for SQLite on Railway (always writable), instance folder locally
+    if os.environ.get('RAILWAY_ENVIRONMENT'):
+        db_path = os.path.join('/tmp', 'pettycash.db')
+    else:
+        db_path = os.path.join(basedir, 'instance', 'pettycash.db')
+
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or f'sqlite:///{db_path}'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     # Session
