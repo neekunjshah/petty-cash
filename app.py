@@ -162,23 +162,30 @@ def expense_create():
     if request.method == 'POST':
         purpose = request.form.get('purpose')
         amount = request.form.get('amount')
+        expense_date = request.form.get('expense_date')
+        employee_name = request.form.get('employee_name')
         recipient_name = request.form.get('recipient_name')
         recipient_signature = request.form.get('recipient_signature')
         employee_signature = request.form.get('employee_signature')
 
         # Validate
-        if not all([purpose, amount, recipient_name, recipient_signature, employee_signature]):
+        if not all([purpose, amount, expense_date, employee_name, recipient_name, recipient_signature, employee_signature]):
             flash('All fields and signatures are required', 'danger')
-            return render_template('expenses/create.html')
+            return render_template('expenses/create.html', current_date=datetime.now().strftime('%Y-%m-%d'))
 
         # Save signatures as files
         recipient_sig_path = save_signature_image(recipient_signature, 'recipient')
         employee_sig_path = save_signature_image(employee_signature, 'employee')
 
+        # Parse date
+        expense_datetime = datetime.strptime(expense_date, '%Y-%m-%d')
+
         # Create expense
         expense = Expense(
             purpose=purpose,
             amount=float(amount),
+            date=expense_datetime,
+            employee_name=employee_name,
             recipient_name=recipient_name,
             recipient_signature=recipient_sig_path,
             employee_signature=employee_sig_path,
@@ -192,7 +199,7 @@ def expense_create():
         flash('Expense submitted for approval!', 'success')
         return redirect(url_for('expense_detail', expense_id=expense.id))
 
-    return render_template('expenses/create.html')
+    return render_template('expenses/create.html', current_date=datetime.now().strftime('%Y-%m-%d'))
 
 
 @app.route('/expenses/<int:expense_id>')

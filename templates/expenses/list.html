@@ -55,7 +55,7 @@
                         <tr>
                             <td>#{{ expense.id }}</td>
                             <td>{{ expense.purpose[:50] }}{% if expense.purpose|length > 50 %}...{% endif %}</td>
-                            <td class="fw-bold text-success">${{ "%.2f"|format(expense.amount) }}</td>
+                            <td class="fw-bold text-success">₹{{ "%.2f"|format(expense.amount) }}</td>
                             <td>{{ expense.recipient_name }}</td>
                             <td><span class="badge badge-{{ expense.status }}">{{ expense.status.upper() }}</span></td>
                             <td>{{ expense.created_at.strftime('%Y-%m-%d') }}</td>
