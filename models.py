@@ -56,6 +56,7 @@ class Expense(db.Model):
     # Basic expense information
     purpose = db.Column(db.String(500), nullable=False)
     amount = db.Column(db.Float, nullable=False)
+    employee_name = db.Column(db.String(120), nullable=False)
     recipient_name = db.Column(db.String(120), nullable=False)
     date = db.Column(db.DateTime, default=datetime.utcnow)
 

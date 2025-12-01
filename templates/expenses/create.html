@@ -22,9 +22,22 @@
                         </div>
 
                         <div class="mb-3">
-                            <label for="amount" class="form-label">Amount ($) *</label>
+                            <label for="amount" class="form-label">Amount (₹) *</label>
                             <input type="number" class="form-control" id="amount" name="amount"
                                    step="0.01" min="0.01" required placeholder="0.00">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="expense_date" class="form-label">Date *</label>
+                            <input type="date" class="form-control" id="expense_date" name="expense_date"
+                                   required value="{{ current_date }}">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="employee_name" class="form-label">Employee Name *</label>
+                            <input type="text" class="form-control" id="employee_name" name="employee_name"
+                                   required value="{{ current_user.full_name }}" placeholder="Employee who made this expense">
+                            <div class="form-text">The employee who incurred this expense</div>
                         </div>
 
                         <div class="mb-3">
