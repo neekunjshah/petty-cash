@@ -25,5 +25,9 @@ class Config:
     PERMANENT_SESSION_LIFETIME = timedelta(hours=24)
 
     # File uploads (signatures)
-    UPLOAD_FOLDER = os.path.join(basedir, 'static', 'signatures')
+    # Use Railway volume for persistent storage, local folder for development
+    if os.environ.get('RAILWAY_ENVIRONMENT'):
+        UPLOAD_FOLDER = '/data/signatures'
+    else:
+        UPLOAD_FOLDER = os.path.join(basedir, 'static', 'signatures')
     MAX_CONTENT_LENGTH = 5 * 1024 * 1024  # 5MB max file size
