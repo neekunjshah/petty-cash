@@ -18,7 +18,14 @@ class Config:
     else:
         db_path = os.path.join(basedir, 'instance', 'pettycash.db')
 
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or f'sqlite:///{db_path}'
+    # Get database URL and configure for psycopg3
+    database_url = os.environ.get('DATABASE_URL') or f'sqlite:///{db_path}'
+
+    # Railway provides postgresql:// but we need postgresql+psycopg:// for psycopg3
+    if database_url.startswith('postgresql://'):
+        database_url = database_url.replace('postgresql://', 'postgresql+psycopg://', 1)
+
+    SQLALCHEMY_DATABASE_URI = database_url
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     # Session
