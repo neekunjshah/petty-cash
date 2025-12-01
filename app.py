@@ -3,6 +3,7 @@ Main Flask application for PettyCash NYSA
 Expense management system with triple digital signatures
 """
 import os
+from datetime import datetime
 from flask import Flask, render_template, redirect, url_for, flash, request
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash
@@ -240,7 +241,6 @@ def expense_approve(expense_id):
     senior_sig_path = save_signature_image(senior_signature, 'senior')
 
     # Update expense
-    from datetime import datetime
     expense.status = 'approved'
     expense.senior_signature = senior_sig_path
     expense.approved_by_id = current_user.id
