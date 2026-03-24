@@ -1,0 +1,112 @@
+2025-12-01 15:07:39.51
+811ee1dc
+User
+elif not current_user.is_authenticated:
+2025-12-01 15:07:39.51
+811ee1dc
+User
+File "/home/runner/workspace/.pythonlibs/lib/python3.12/site-packages/flask/app.py", line 1455, in wsgi_app
+2025-12-01 15:07:39.51
+811ee1dc
+User
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-12-01 15:07:39.51
+811ee1dc
+User
+File "/home/runner/workspace/.pythonlibs/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1967, in _exec_single_context
+2025-12-01 15:07:39.51
+811ee1dc
+User
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-12-01 15:07:39.51
+811ee1dc
+User
+response = self.handle_exception(e)
+2025-12-01 15:07:39.51
+811ee1dc
+User
+return self.wsgi_app(environ, start_response)
+2025-12-01 15:07:39.51
+811ee1dc
+User
+The above exception was the direct cause of the following exception:
+2025-12-01 15:07:39.51
+811ee1dc
+User
+File "/home/runner/workspace/app.py", line 29, in load_user
+2025-12-01 15:07:39.51
+811ee1dc
+User
+^^^^^^^^^^^^
+2025-12-01 15:07:39.51
+811ee1dc
+User
+File "/home/runner/workspace/.pythonlibs/lib/python3.12/site-packages/flask/app.py", line 852, in dispatch_request
+2025-12-01 15:07:39.51
+811ee1dc
+User
+return User.query.get(int(user_id))
+2025-12-01 15:07:39.51
+811ee1dc
+User
+File "/home/runner/workspace/.pythonlibs/lib/python3.12/site-packages/psycopg/cursor.py", line 97, in execute
+2025-12-01 15:07:39.51
+811ee1dc
+User
+^^^^^^^^^^^^^^^^^^^^^^^
+2025-12-01 15:07:39.51
+811ee1dc
+User
+return db_load_fn(
+2025-12-01 15:07:39.51
+811ee1dc
+User
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-12-01 15:07:39.51
+811ee1dc
+User
+File "/home/runner/workspace/.pythonlibs/lib/python3.12/site-packages/flask_login/login_manager.py", line 364, in _load_user
+2025-12-01 15:07:39.51
+811ee1dc
+User
+^^^^^^^^^^^^^^^^^^^^^^^^
+2025-12-01 15:07:39.51
+811ee1dc
+User
+File "/home/runner/workspace/.pythonlibs/lib/python3.12/site-packages/sqlalchemy/orm/query.py", line 1126, in get
+2025-12-01 15:07:39.51
+811ee1dc
+User
+return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+2025-12-01 15:07:39.51
+811ee1dc
+User
+File "", line 2, in get
+2025-12-01 15:07:39.51
+811ee1dc
+User
+File "/home/runner/workspace/.pythonlibs/lib/python3.12/site-packages/flask/app.py", line 1458, in wsgi_app
+2025-12-01 15:07:39.51
+811ee1dc
+User
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-12-01 15:07:39.51
+811ee1dc
+User
+current_app.login_manager._load_user()
+2025-12-01 15:07:39.51
+811ee1dc
+User
+File "/home/runner/workspace/.pythonlibs/lib/python3.12/site-packages/sqlalchemy/orm/query.py", line 1135, in _get_impl
+2025-12-01 15:07:39.51
+811ee1dc
+User
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-12-01 15:07:39.51
+811ee1dc
+User
+File "/home/runner/workspace/.pythonlibs/lib/python3.12/site-packages/flask/app.py", line 869, in full_dispatch_request
+2025-12-01 15:07:39.51
+811ee1dc
+User
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

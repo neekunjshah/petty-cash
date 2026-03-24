@@ -41,6 +41,19 @@ if app.config['SQLALCHEMY_DATABASE_URI'].startswith('sqlite'):
             cursor.close()
 
 
+# Version + cache busting
+from version import __version__ as app_version
+
+@app.context_processor
+def inject_version():
+    return dict(app_version=app_version)
+
+@app.url_defaults
+def cache_bust_static(endpoint, values):
+    if endpoint == 'static':
+        values['v'] = app_version
+
+
 # Database session management
 @app.teardown_appcontext
 def shutdown_session(exception=None):

@@ -1,0 +1,104 @@
+5.19
+6981e057
+User
+SSL connection has been closed unexpectedly
+2025-12-20 14:35:55.19
+6981e057
+User
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2025-12-20 14:35:55.19
+6981e057
+User
+WHERE users.id = %(pk_1)s::INTEGER]
+2025-12-20 14:35:55.19
+6981e057
+User
+[2025-12-20 09:05:55,194] ERROR in app: Error loading user 3: (psycopg.OperationalError) consuming input failed: terminating connection due to administrator command
+2025-12-20 14:35:55.19
+6981e057
+User
+FROM users
+2025-12-20 14:35:56.17
+6981e057
+User
+[SQL: SELECT users.id AS users_id, users.username AS users_username, users.email AS users_email, users.password_hash AS users_password_hash, users.full_name AS users_full_name, users.role AS users_role, users.phone_number AS users_phone_number, users.created_at AS users_created_at
+2025-12-20 14:35:56.17
+6981e057
+User
+SSL connection has been closed unexpectedly
+2025-12-20 14:35:56.17
+6981e057
+User
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2025-12-20 14:35:56.17
+6981e057
+User
+WHERE users.id = %(pk_1)s::INTEGER]
+2025-12-20 14:35:56.17
+6981e057
+User
+[parameters: {'pk_1': 3}]
+2025-12-20 14:35:56.17
+6981e057
+User
+FROM users
+2025-12-20 14:35:56.17
+6981e057
+User
+[2025-12-20 09:05:56,171] ERROR in app: Error loading user 3: (psycopg.OperationalError) consuming input failed: terminating connection due to administrator command
+2025-12-20 14:36:02.78
+6981e057
+User
+[parameters: {'pk_1': 3}]
+2025-12-20 14:36:02.78
+6981e057
+User
+SSL connection has been closed unexpectedly
+2025-12-20 14:36:02.78
+6981e057
+User
+WHERE users.id = %(pk_1)s::INTEGER]
+2025-12-20 14:36:02.78
+6981e057
+User
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2025-12-20 14:36:02.78
+6981e057
+User
+FROM users
+2025-12-20 14:36:02.78
+6981e057
+User
+[SQL: SELECT users.id AS users_id, users.username AS users_username, users.email AS users_email, users.password_hash AS users_password_hash, users.full_name AS users_full_name, users.role AS users_role, users.phone_number AS users_phone_number, users.created_at AS users_created_at
+2025-12-20 14:36:02.78
+6981e057
+User
+[2025-12-20 09:06:02,785] ERROR in app: Error loading user 3: (psycopg.OperationalError) consuming input failed: terminating connection due to administrator command
+2025-12-20 14:36:10.04
+6981e057
+User
+[2025-12-20 09:06:10,042] ERROR in app: Error loading user 2: (psycopg.OperationalError) consuming input failed: terminating connection due to administrator command
+2025-12-20 14:36:10.04
+6981e057
+User
+[parameters: {'pk_1': 2}]
+2025-12-20 14:36:10.04
+6981e057
+User
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2025-12-20 14:36:10.04
+6981e057
+User
+[SQL: SELECT users.id AS users_id, users.username AS users_username, users.email AS users_email, users.password_hash AS users_password_hash, users.full_name AS users_full_name, users.role AS users_role, users.phone_number AS users_phone_number, users.created_at AS users_created_at
+2025-12-20 14:36:10.04
+6981e057
+User
+FROM users
+2025-12-20 14:36:10.04
+6981e057
+User
+SSL connection has been closed unexpectedly
+2025-12-20 14:36:10.04
+6981e057
+User
+WHERE users.id = %(pk_1)s::INTEGER]

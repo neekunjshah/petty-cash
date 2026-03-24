@@ -1,0 +1,149 @@
+2025-12-08 13:27:32.15
+8a779c21
+User
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-12-08 13:27:32.15
+8a779c21
+User
+^^^^^^^^^^^^^^^^^^^^^^^
+2025-12-08 13:27:32.15
+8a779c21
+User
+File "/home/runner/workspace/.pythonlibs/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1419, in execute
+2025-12-08 13:27:32.15
+8a779c21
+User
+File "/home/runner/workspace/.pythonlibs/lib/python3.12/site-packages/flask/app.py", line 852, in dispatch_request
+2025-12-08 13:27:32.15
+8a779c21
+User
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-12-08 13:27:32.15
+8a779c21
+User
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-12-08 13:27:32.15
+8a779c21
+User
+File "/home/runner/workspace/.pythonlibs/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1813, in _execute_context
+2025-12-08 13:27:32.15
+8a779c21
+User
+sqlalchemy.exc.PendingRollbackError: Can't reconnect until invalid transaction is rolled back. Please rollback() fully before proceeding (Background on this error at: https://sqlalche.me/e/20/8s2b)
+2025-12-08 13:27:32.15
+8a779c21
+User
+result = conn.execute(
+2025-12-08 13:27:32.15
+8a779c21
+User
+^^^^^^^^^^^^^^^^^^^^^^^
+2025-12-08 13:27:32.15
+8a779c21
+User
+File "/home/runner/workspace/.pythonlibs/lib/python3.12/site-packages/flask_cors/extension.py", line 176, in wrapped_function
+2025-12-08 13:27:32.15
+8a779c21
+User
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-12-08 13:27:32.15
+8a779c21
+User
+return meth(
+2025-12-08 13:27:32.15
+8a779c21
+User
+result: Result[Any] = compile_state_cls.orm_execute_statement(
+2025-12-08 13:27:32.15
+8a779c21
+User
+^^^^^^^^^^^^^^^^^^
+2025-12-08 13:27:32.15
+8a779c21
+User
+return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+2025-12-08 13:27:32.15
+8a779c21
+User
+return connection._execute_clauseelement(
+2025-12-08 13:27:32.15
+8a779c21
+User
+Traceback (most recent call last):
+2025-12-08 13:27:32.15
+8a779c21
+User
+rv = self.dispatch_request()
+2025-12-08 13:27:32.15
+8a779c21
+User
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-12-08 13:27:32.15
+8a779c21
+User
+^^^^^
+2025-12-08 13:27:32.15
+8a779c21
+User
+self._invalid_transaction()
+2025-12-08 13:27:32.15
+8a779c21
+User
+return cors_after_request(app.make_response(f(*args, **kwargs)))
+2025-12-08 13:27:32.15
+8a779c21
+User
+response = self.full_dispatch_request()
+2025-12-08 13:27:32.15
+8a779c21
+User
+[2025-12-08 07:57:32,143] ERROR in app: Exception on /login [POST]
+2025-12-08 13:27:32.15
+8a779c21
+User
+result: Union[ScalarResult[_T], Result[_T]] = self.session.execute(
+2025-12-08 13:27:32.15
+8a779c21
+User
+File "/home/runner/workspace/.pythonlibs/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 663, in _invalid_transaction
+2025-12-08 13:27:32.15
+8a779c21
+User
+return self.limit(1)._iter().first() # type: ignore
+2025-12-08 13:27:32.15
+8a779c21
+User
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-12-08 13:27:32.15
+8a779c21
+User
+File "/home/runner/workspace/.pythonlibs/lib/python3.12/site-packages/sqlalchemy/orm/query.py", line 2857, in _iter
+2025-12-08 13:27:32.15
+8a779c21
+User
+rv = self.handle_user_exception(e)
+2025-12-08 13:27:32.15
+8a779c21
+User
+^^^^^^^^^^^^^^^^^^^^^
+2025-12-08 13:27:32.15
+8a779c21
+User
+return self._execute_internal(
+2025-12-08 13:27:32.15
+8a779c21
+User
+^^^^^^^^^^^^^^^^^^^^^
+2025-12-08 13:27:32.15
+8a779c21
+User
+File "/home/runner/workspace/.pythonlibs/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 2249, in _execute_internal
+2025-12-08 13:27:35.28
+8a779c21
+User
+WHERE users.id = %(pk_1)s::INTEGER]
+
+2025-12-08 13:27:35.28
+8a779c21
+User
+WHERE users.id = %(pk_1)s::INTEGER]

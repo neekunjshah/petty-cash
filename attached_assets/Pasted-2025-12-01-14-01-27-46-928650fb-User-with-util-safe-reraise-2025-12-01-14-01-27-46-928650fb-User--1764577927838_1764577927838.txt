@@ -1,0 +1,144 @@
+2025-12-01 14:01:27.46
+928650fb
+User
+with util.safe_reraise():
+2025-12-01 14:01:27.46
+928650fb
+User
+File "/home/runner/workspace/.pythonlibs/lib/python3.12/site-packages/sqlalchemy/pool/impl.py", line 175, in _do_get
+2025-12-01 14:01:27.46
+928650fb
+User
+return self._create_connection()
+2025-12-01 14:01:27.46
+928650fb
+User
+^^^^^^^^^^^^^^^^^^^^^^^
+2025-12-01 14:01:27.46
+928650fb
+User
+self.__connect()
+2025-12-01 14:01:27.46
+928650fb
+User
+return _ConnectionRecord(self)
+2025-12-01 14:01:27.46
+928650fb
+User
+^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-12-01 14:01:27.46
+928650fb
+User
+raise exc_value.with_traceback(exc_tb)
+2025-12-01 14:01:27.46
+928650fb
+User
+^^^^^^^^^^^^^^^^^^^
+2025-12-01 14:01:27.46
+928650fb
+User
+File "/home/runner/workspace/.pythonlibs/lib/python3.12/site-packages/sqlalchemy/pool/base.py", line 388, in _create_connection
+2025-12-01 14:01:27.46
+928650fb
+User
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-12-01 14:01:27.46
+928650fb
+User
+File "/home/runner/workspace/.pythonlibs/lib/python3.12/site-packages/sqlalchemy/engine/create.py", line 661, in connect
+2025-12-01 14:01:27.46
+928650fb
+User
+File "/home/runner/workspace/.pythonlibs/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 629, in connect
+2025-12-01 14:01:27.46
+928650fb
+User
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-12-01 14:01:27.46
+928650fb
+User
+self.dbapi_connection = connection = pool._invoke_creator(self)
+2025-12-01 14:01:27.46
+928650fb
+User
+return dialect.connect(*cargs, **cparams)
+2025-12-01 14:01:27.46
+928650fb
+User
+raise exc_value.with_traceback(exc_tb)
+2025-12-01 14:01:27.46
+928650fb
+User
+File "/home/runner/workspace/.pythonlibs/lib/python3.12/site-packages/sqlalchemy/pool/base.py", line 895, in __connect
+2025-12-01 14:01:27.46
+928650fb
+User
+db.create_all()
+2025-12-01 14:01:27.46
+928650fb
+User
+Traceback (most recent call last):
+2025-12-01 14:01:27.46
+928650fb
+User
+File "/home/runner/workspace/.pythonlibs/lib/python3.12/site-packages/psycopg/connection.py", line 98, in connect
+2025-12-01 14:01:27.46
+928650fb
+User
+File "/home/runner/workspace/.pythonlibs/lib/python3.12/site-packages/flask_sqlalchemy/extension.py", line 900, in create_all
+2025-12-01 14:01:27.46
+928650fb
+User
+attempts = conninfo_attempts(params)
+2025-12-01 14:01:27.46
+928650fb
+User
+init_db()
+2025-12-01 14:01:27.46
+928650fb
+User
+File "/home/runner/workspace/.pythonlibs/lib/python3.12/site-packages/psycopg/_conninfo_attempts.py", line 50, in conninfo_attempts
+2025-12-01 14:01:27.46
+928650fb
+User
+return self.loaded_dbapi.connect(*cargs, **cparams) # type: ignore[no-any-return] # NOQA: E501
+2025-12-01 14:01:27.46
+928650fb
+User
+raise e.OperationalError(str(last_exc))
+2025-12-01 14:01:27.46
+928650fb
+User
+psycopg.OperationalError: [Errno -3] Temporary failure in name resolution
+2025-12-01 14:01:27.46
+928650fb
+User
+File "/home/runner/workspace/app.py", line 36, in init_db
+2025-12-01 14:01:27.46
+928650fb
+User
+^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-12-01 14:01:27.46
+928650fb
+User
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-12-01 14:01:27.46
+928650fb
+User
+File "/home/runner/workspace/app.py", line 481, in
+2025-12-01 14:01:27.46
+928650fb
+User
+getattr(metadata, op_name)(bind=engine)
+2025-12-01 14:01:27.46
+928650fb
+User
+^^^^^^^^^^^^^^
+2025-12-01 14:01:27.46
+928650fb
+User
+return self._connection_cls(self)
+2025-12-01 14:01:27.46
+928650fb
+User
+^^^^^^^^^^^^^^^^^^^^^^^^^^

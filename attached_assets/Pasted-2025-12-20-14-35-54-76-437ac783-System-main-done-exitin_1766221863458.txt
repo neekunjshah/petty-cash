@@ -1,0 +1,158 @@
+2025-12-20 14:35:54.76
+437ac783
+System
+main done, exiting
+2025-12-20 14:35:55.19
+6981e057
+User
+[parameters: {'pk_1': 3}]
+2025-12-20 14:35:55.19
+6981e057
+User
+[SQL: SELECT users.id AS users_id, users.username AS users_username, users.email AS users_email, users.password_hash AS users_password_hash, users.full_name AS users_full_name, users.role AS users_role, users.phone_number AS users_phone_number, users.created_at AS users_created_at
+2025-12-20 14:35:55.19
+6981e057
+User
+SSL connection has been closed unexpectedly
+2025-12-20 14:35:55.19
+6981e057
+User
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2025-12-20 14:35:55.19
+6981e057
+User
+WHERE users.id = %(pk_1)s::INTEGER]
+2025-12-20 14:35:55.19
+6981e057
+User
+[2025-12-20 09:05:55,194] ERROR in app: Error loading user 3: (psycopg.OperationalError) consuming input failed: terminating connection due to administrator command
+2025-12-20 14:35:55.19
+6981e057
+User
+FROM users
+2025-12-20 14:35:56.17
+6981e057
+User
+[2025-12-20 09:05:56,171] ERROR in app: Error loading user 3: (psycopg.OperationalError) consuming input failed: terminating connection due to administrator command
+2025-12-20 14:35:56.17
+6981e057
+User
+FROM users
+2025-12-20 14:35:56.17
+6981e057
+User
+[parameters: {'pk_1': 3}]
+2025-12-20 14:35:56.17
+6981e057
+User
+WHERE users.id = %(pk_1)s::INTEGER]
+2025-12-20 14:35:56.17
+6981e057
+User
+SSL connection has been closed unexpectedly
+2025-12-20 14:35:56.17
+6981e057
+User
+[SQL: SELECT users.id AS users_id, users.username AS users_username, users.email AS users_email, users.password_hash AS users_password_hash, users.full_name AS users_full_name, users.role AS users_role, users.phone_number AS users_phone_number, users.created_at AS users_created_at
+2025-12-20 14:35:56.17
+6981e057
+User
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2025-12-20 14:36:02.78
+6981e057
+User
+[parameters: {'pk_1': 3}]
+2025-12-20 14:36:02.78
+6981e057
+User
+SSL connection has been closed unexpectedly
+2025-12-20 14:36:02.78
+6981e057
+User
+WHERE users.id = %(pk_1)s::INTEGER]
+2025-12-20 14:36:02.78
+6981e057
+User
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2025-12-20 14:36:02.78
+6981e057
+User
+FROM users
+2025-12-20 14:36:02.78
+6981e057
+User
+[SQL: SELECT users.id AS users_id, users.username AS users_username, users.email AS users_email, users.password_hash AS users_password_hash, users.full_name AS users_full_name, users.role AS users_role, users.phone_number AS users_phone_number, users.created_at AS users_created_at
+2025-12-20 14:36:02.78
+6981e057
+User
+[2025-12-20 09:06:02,785] ERROR in app: Error loading user 3: (psycopg.OperationalError) consuming input failed: terminating connection due to administrator command
+2025-12-20 14:36:10.04
+6981e057
+User
+WHERE users.id = %(pk_1)s::INTEGER]
+2025-12-20 14:36:10.04
+6981e057
+User
+SSL connection has been closed unexpectedly
+2025-12-20 14:36:10.04
+6981e057
+User
+FROM users
+2025-12-20 14:36:10.04
+6981e057
+User
+[SQL: SELECT users.id AS users_id, users.username AS users_username, users.email AS users_email, users.password_hash AS users_password_hash, users.full_name AS users_full_name, users.role AS users_role, users.phone_number AS users_phone_number, users.created_at AS users_created_at
+2025-12-20 14:36:10.04
+6981e057
+User
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2025-12-20 14:36:10.04
+6981e057
+User
+[parameters: {'pk_1': 2}]
+2025-12-20 14:36:10.04
+6981e057
+User
+[2025-12-20 09:06:10,042] ERROR in app: Error loading user 2: (psycopg.OperationalError) consuming input failed: terminating connection due to administrator command
+2025-12-20 14:37:04.38
+ea945711
+System
+starting up user application
+2025-12-20 14:37:04.38
+ea945711
+System
+metasidecar: loaded enterprise status from environment is_enterprise=false
+2025-12-20 14:37:04.38
+ea945711
+System
+forwarding local port 5000 to external port 80 (mapped as 1104)
+2025-12-20 14:37:05.64
+ea945711
+User
+[2025-12-20 09:07:05 +0000] [27] [INFO] Starting gunicorn 21.2.0
+2025-12-20 14:37:05.64
+ea945711
+User
+[2025-12-20 09:07:05 +0000] [27] [INFO] Listening at: http://0.0.0.0:5000 (27)
+2025-12-20 14:37:05.64
+ea945711
+User
+[2025-12-20 09:07:05 +0000] [27] [INFO] Using worker: sync
+2025-12-20 14:37:05.65
+ea945711
+User
+[2025-12-20 09:07:05 +0000] [32] [INFO] Booting worker with pid: 32
+2025-12-20 14:37:05.71
+ea945711
+User
+[2025-12-20 09:07:05 +0000] [33] [INFO] Booting worker with pid: 33
+2025-12-20 14:37:05.78
+ea945711
+User
+[2025-12-20 09:07:05 +0000] [34] [INFO] Booting worker with pid: 34
+2025-12-20 14:37:05.79
+ea945711
+User
+[2025-12-20 09:07:05 +0000] [35] [INFO] Booting worker with pid: 35
+Wrap
+Colors

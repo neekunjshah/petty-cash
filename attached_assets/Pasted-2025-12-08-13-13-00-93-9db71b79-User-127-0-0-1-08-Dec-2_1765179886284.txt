@@ -1,0 +1,145 @@
+2025-12-08 13:13:00.93
+9db71b79
+User
+127.0.0.1 - - [08/Dec/2025 07:43:00] "GET /static/manifest.json HTTP/1.1" 304 -
+2025-12-08 13:13:01.00
+9db71b79
+User
+127.0.0.1 - - [08/Dec/2025 07:43:01] "GET /static/notifications.js HTTP/1.1" 304 -
+2025-12-08 13:13:01.00
+9db71b79
+User
+127.0.0.1 - - [08/Dec/2025 07:43:01] "GET /static/images/logo.png HTTP/1.1" 304 -
+2025-12-08 13:13:03.55
+9db71b79
+User
+127.0.0.1 - - [08/Dec/2025 07:43:03] "GET /expenses/20 HTTP/1.1" 200 -
+2025-12-08 13:13:03.85
+9db71b79
+User
+127.0.0.1 - - [08/Dec/2025 07:43:03] "GET /static/manifest.json HTTP/1.1" 304 -
+2025-12-08 13:13:03.85
+9db71b79
+User
+127.0.0.1 - - [08/Dec/2025 07:43:03] "GET /static/js/signature.js HTTP/1.1" 304 -
+2025-12-08 13:13:03.91
+9db71b79
+User
+127.0.0.1 - - [08/Dec/2025 07:43:03] "GET /static/notifications.js HTTP/1.1" 304 -
+2025-12-08 13:13:03.91
+9db71b79
+User
+127.0.0.1 - - [08/Dec/2025 07:43:03] "GET /static/images/logo.png HTTP/1.1" 304 -
+2025-12-08 13:13:03.91
+9db71b79
+User
+127.0.0.1 - - [08/Dec/2025 07:43:03] "GET /static/js/signature.js HTTP/1.1" 304 -
+2025-12-08 13:13:16.47
+9db71b79
+User
+127.0.0.1 - - [08/Dec/2025 07:43:16] "GET /dashboard HTTP/1.1" 200 -
+2025-12-08 13:13:16.76
+9db71b79
+User
+127.0.0.1 - - [08/Dec/2025 07:43:16] "GET /static/manifest.json HTTP/1.1" 304 -
+2025-12-08 13:13:16.82
+9db71b79
+User
+127.0.0.1 - - [08/Dec/2025 07:43:16] "GET /static/notifications.js HTTP/1.1" 304 -
+2025-12-08 13:13:16.83
+9db71b79
+User
+127.0.0.1 - - [08/Dec/2025 07:43:16] "GET /static/images/logo.png HTTP/1.1" 304 -
+2025-12-08 13:13:30.84
+9db71b79
+User
+127.0.0.1 - - [08/Dec/2025 07:43:30] "GET / HTTP/1.1" 302 -
+2025-12-08 13:13:31.35
+9db71b79
+User
+127.0.0.1 - - [08/Dec/2025 07:43:31] "GET /dashboard HTTP/1.1" 200 -
+2025-12-08 13:13:31.72
+9db71b79
+User
+127.0.0.1 - - [08/Dec/2025 07:43:31] "GET /static/manifest.json HTTP/1.1" 200 -
+2025-12-08 13:13:31.73
+9db71b79
+User
+127.0.0.1 - - [08/Dec/2025 07:43:31] "GET /static/notifications.js HTTP/1.1" 304 -
+2025-12-08 13:13:31.73
+9db71b79
+User
+127.0.0.1 - - [08/Dec/2025 07:43:31] "GET /static/images/logo.png HTTP/1.1" 200 -
+2025-12-08 13:14:01.30
+db20d71a
+System
+starting up user application
+2025-12-08 13:14:01.30
+db20d71a
+System
+forwarding local port 5000 to external port 80 (mapped as 1104)
+2025-12-08 13:14:01.30
+db20d71a
+System
+metasidecar: loaded enterprise status from environment is_enterprise=false
+2025-12-08 13:14:07.46
+db20d71a
+User
+📍 Access at: http://0.0.0.0:5000
+2025-12-08 13:14:07.46
+db20d71a
+User
+* Debug mode: off
+2025-12-08 13:14:07.46
+db20d71a
+User
+🚀 Starting PettyCash NYSA Web App
+2025-12-08 13:14:07.46
+db20d71a
+User
+🔐 Debug Mode: False
+2025-12-08 13:14:07.46
+db20d71a
+User
+* Serving Flask app 'app'
+2025-12-08 13:14:07.46
+db20d71a
+User
+✅ Database already initialized
+2025-12-08 13:14:07.47
+db20d71a
+User
+WARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.
+2025-12-08 13:14:07.47
+db20d71a
+User
+* Running on http://127.0.0.1:5000
+2025-12-08 13:14:07.47
+db20d71a
+User
+* Running on http://169.254.8.1:5000
+2025-12-08 13:14:07.47
+db20d71a
+User
+Press CTRL+C to quit
+2025-12-08 13:14:07.47
+db20d71a
+User
+* Running on all addresses (0.0.0.0)
+2025-12-08 13:14:08.36
+db20d71a
+User
+127.0.0.1 - - [08/Dec/2025 07:44:08] "GET / HTTP/1.1" 302 -
+2025-12-08 13:14:08.39
+db20d71a
+User
+127.0.0.1 - - [08/Dec/2025 07:44:08] "GET /login HTTP/1.1" 200 -
+
+2025-12-08 13:14:08.39
+db20d71a
+User
+127.0.0.1 - - [08/Dec/2025 07:44:08] "GET /login HTTP/1.1" 200 -
+2025-12-08 13:14:08.39
+db20d71a
+User
+127.0.0.1 - - [08/Dec/2025 07:44:08] "GET /login HTTP/1.1" 200 
