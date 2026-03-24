@@ -108,7 +108,7 @@
                                         {% endif %}
                                     </td>
                                     <td class="fw-bold {% if transaction.amount >= 0 %}text-success{% else %}text-danger{% endif %}">
-                                        {% if transaction.amount >= 0 %}+{% endif %}₹{{ "%.2f"|format(transaction.amount|abs) }}
+                                        {% if transaction.amount >= 0 %}+₹{{ "%.2f"|format(transaction.amount) }}{% else %}-₹{{ "%.2f"|format(transaction.amount|abs) }}{% endif %}
                                     </td>
                                     <td>{{ transaction.recorded_by.full_name }}</td>
                                     {% if current_user.is_senior %}

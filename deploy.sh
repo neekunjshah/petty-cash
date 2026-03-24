@@ -1,10 +1,11 @@
 #!/bin/bash
 # PettyCash NYSA — Deploy Script
+# Every deploy auto-bumps the version (patch by default)
 # Usage:
-#   ./deploy.sh           Deploy current version
-#   ./deploy.sh patch     Bump patch (1.1.0 → 1.1.1), commit, deploy
-#   ./deploy.sh minor     Bump minor (1.1.0 → 1.2.0), commit, deploy
-#   ./deploy.sh major     Bump major (1.1.0 → 2.0.0), commit, deploy
+#   ./deploy.sh           Bump patch (1.1.0 → 1.1.1) and deploy
+#   ./deploy.sh patch     Same as above
+#   ./deploy.sh minor     Bump minor (1.1.0 → 1.2.0) and deploy
+#   ./deploy.sh major     Bump major (1.1.0 → 2.0.0) and deploy
 set -e
 
 # Config
@@ -20,20 +21,18 @@ cd "$SCRIPT_DIR"
 VERSION=$(python3 -c "exec(open('version.py').read()); print(__version__)")
 echo "Current version: $VERSION"
 
-# ── Version bump (if requested) ──
-BUMP="$1"
-if [ -n "$BUMP" ]; then
-    IFS='.' read -r MAJOR MINOR PATCH <<< "$VERSION"
-    case "$BUMP" in
-        major) MAJOR=$((MAJOR + 1)); MINOR=0; PATCH=0 ;;
-        minor) MINOR=$((MINOR + 1)); PATCH=0 ;;
-        patch) PATCH=$((PATCH + 1)) ;;
-        *) echo "Usage: $0 [major|minor|patch]"; exit 1 ;;
-    esac
-    VERSION="$MAJOR.$MINOR.$PATCH"
-    echo "__version__ = \"$VERSION\"" > version.py
-    echo "Bumped to: $VERSION"
-fi
+# ── Always bump version (patch by default) ──
+BUMP="${1:-patch}"
+IFS='.' read -r MAJOR MINOR PATCH <<< "$VERSION"
+case "$BUMP" in
+    major) MAJOR=$((MAJOR + 1)); MINOR=0; PATCH=0 ;;
+    minor) MINOR=$((MINOR + 1)); PATCH=0 ;;
+    patch) PATCH=$((PATCH + 1)) ;;
+    *) echo "Usage: $0 [major|minor|patch]"; exit 1 ;;
+esac
+VERSION="$MAJOR.$MINOR.$PATCH"
+echo "__version__ = \"$VERSION\"" > version.py
+echo "Deploying: v$VERSION"
 
 # ── Git commit + tag + push ──
 echo ""

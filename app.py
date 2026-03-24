@@ -686,15 +686,17 @@ def expense_approve(expense_id):
     expense.approved_by_id = current_user.id
     expense.approved_at = datetime.utcnow()
     
-    # Deduct amount from cash balance
-    expense_transaction = CashTransaction(
-        transaction_type='expense',
-        amount=-expense.amount,  # Negative for expense
-        description=f'Expense #{expense.id}: {expense.purpose[:50]}',
-        expense_id=expense.id,
-        recorded_by_id=current_user.id
-    )
-    db.session.add(expense_transaction)
+    # Deduct amount from cash balance (check for duplicate to prevent double-click)
+    existing_txn = CashTransaction.query.filter_by(expense_id=expense.id).first()
+    if not existing_txn:
+        expense_transaction = CashTransaction(
+            transaction_type='expense',
+            amount=-expense.amount,  # Negative for expense
+            description=f'Expense #{expense.id}: {expense.purpose[:50]}',
+            expense_id=expense.id,
+            recorded_by_id=current_user.id
+        )
+        db.session.add(expense_transaction)
 
     db.session.commit()
     
@@ -768,7 +770,7 @@ def delete_expense(expense_id):
     
     # Soft delete the expense
     expense.is_deleted = True
-    expense.deleted_at = datetime.now()
+    expense.deleted_at = datetime.utcnow()
     expense.deleted_by_id = current_user.id
     
     db.session.commit()
@@ -825,7 +827,7 @@ def restore_expense(expense_id):
             description=f'Restored: Expense #{expense_num} - {expense.purpose}',
             expense_id=expense_id,
             recorded_by_id=current_user.id,
-            transaction_date=datetime.now()
+            transaction_date=datetime.utcnow()
         )
         db.session.add(deduction)
     
@@ -1447,7 +1449,9 @@ def add_cash():
 @login_required
 def cash_history():
     """View all cash transactions"""
-    transactions = CashTransaction.query.order_by(CashTransaction.created_at.desc()).all()
+    transactions = CashTransaction.query.options(
+        joinedload(CashTransaction.recorded_by), joinedload(CashTransaction.expense)
+    ).order_by(CashTransaction.created_at.desc()).all()
     current_balance = CashTransaction.get_current_balance()
     total_received = CashTransaction.get_total_received()
     total_expenses = CashTransaction.get_total_expenses()
