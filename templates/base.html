@@ -3,7 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0066cc">
+    <meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
+    <meta name="description" content="PettyCash NYSA - Expense Management System with Digital Signatures">
     <title>{% block title %}PettyCash NYSA{% endblock %}</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/logo.png') }}">
+    <link rel="apple-touch-icon" href="{{ url_for('static', filename='images/logo.png') }}">
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
+    <!-- Bootstrap & Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.css">
     <style>
@@ -33,6 +42,61 @@
             border-radius: 8px;
             cursor: crosshair;
             background-color: white;
+            touch-action: none; /* Prevent scrolling, zooming, and browser gestures */
+            -webkit-user-select: none; /* Prevent text selection on iOS */
+            user-select: none;
+        }
+        .signature-container {
+            padding-bottom: max(120px, env(safe-area-inset-bottom));
+            margin-bottom: 20px;
+        }
+        /* Fullscreen signature mode */
+        .signature-fullscreen-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #f8f9fa;
+            z-index: 9999;
+            display: none;
+            flex-direction: column;
+            padding: 20px;
+            padding-bottom: max(140px, calc(20px + env(safe-area-inset-bottom)));
+        }
+        .signature-fullscreen-overlay.active {
+            display: flex;
+        }
+        .signature-fullscreen-header {
+            flex: 0 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-top: max(20px, env(safe-area-inset-top));
+        }
+        .signature-fullscreen-canvas-wrapper {
+            flex: 1 1 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow: auto;
+            min-height: 0;
+        }
+        .signature-fullscreen-canvas {
+            max-width: 100%;
+            width: 100%;
+            height: 300px;
+            border: 3px solid #0066cc;
+            border-radius: 12px;
+            background: white;
+            flex-shrink: 0;
+        }
+        @media (orientation: landscape) {
+            .signature-fullscreen-canvas {
+                height: min(60vh, 250px);
+                max-height: calc(100vh - 180px);
+            }
         }
         .badge-draft { background-color: #6c757d; }
         .badge-pending { background-color: #ffc107; }
@@ -46,8 +110,9 @@
     {% if current_user.is_authenticated %}
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
         <div class="container-fluid">
-            <a class="navbar-brand" href="{{ url_for('dashboard') }}">
-                <i class="bi bi-cash-coin"></i> PettyCash NYSA
+            <a class="navbar-brand" href="{{ url_for('dashboard') }}" style="display: flex; align-items: center; gap: 8px;">
+                <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo" height="32" width="32" style="border-radius: 4px;">
+                PettyCash NYSA
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
@@ -71,6 +136,11 @@
                         </a>
                     </li>
                     {% endif %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('recycle_bin') }}">
+                            <i class="bi bi-trash3"></i> Recycle Bin
+                        </a>
+                    </li>
                 </ul>
                 <ul class="navbar-nav">
                     <li class="nav-item dropdown">
@@ -112,6 +182,9 @@
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    {% if current_user.is_authenticated %}
+    <script src="{{ url_for('static', filename='notifications.js') }}"></script>
+    {% endif %}
     {% block extra_js %}{% endblock %}
 </body>
 </html>

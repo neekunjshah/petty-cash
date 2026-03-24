@@ -61,3 +61,14 @@ htmlcov/
 
 # OS
 Thumbs.db
+
+# Replit
+.replit
+.agents/
+replit.md
+.local/
+.pythonlibs/
+.upm/
+
+# Migration
+pettycash_dump.sql

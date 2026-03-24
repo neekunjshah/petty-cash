@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block title %}Export Monthly CSV - PettyCash NYSA{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-lg">
+                <div class="card-header bg-info text-white">
+                    <h4 class="mb-0">
+                        <i class="bi bi-file-earmark-csv"></i> Export Monthly CSV Report
+                    </h4>
+                </div>
+                <div class="card-body p-4">
+                    <form method="POST">
+                        <div class="mb-3">
+                            <label for="month_year" class="form-label fw-bold">
+                                <i class="bi bi-calendar-month"></i> Select Month
+                            </label>
+                            <select class="form-control form-control-lg" id="month_year" 
+                                    name="month_year" required>
+                                <option value="">-- Select Month and Year --</option>
+                                {% for year in range(current_date.year - 1, current_date.year + 2) %}
+                                    {% for month in range(1, 13) %}
+                                        {% if year < current_date.year or (year == current_date.year and month <= current_date.month) %}
+                                            <option value="{{ '%04d-%02d' % (year, month) }}">
+                                                {% set months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'] %}
+                                                {{ months[month - 1] }} {{ year }}
+                                            </option>
+                                        {% endif %}
+                                    {% endfor %}
+                                {% endfor %}
+                            </select>
+                            <small class="text-muted">Choose the month for the expense report</small>
+                        </div>
+
+                        <div class="alert alert-info" role="alert">
+                            <i class="bi bi-info-circle"></i> This CSV will include all approved expenses for the selected month, excluding signature information.
+                        </div>
+
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-info btn-lg">
+                                <i class="bi bi-download"></i> Download CSV
+                            </button>
+                            <a href="{{ url_for('dashboard') }}" class="btn btn-outline-secondary btn-lg">
+                                <i class="bi bi-arrow-left"></i> Back
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

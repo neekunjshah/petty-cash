@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block title %}Export Monthly PDF - PettyCash NYSA{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-file-pdf"></i> Export Monthly Expense Report
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    <form method="POST" class="needs-validation">
+                        <div class="mb-3">
+                            <label for="month_year" class="form-label fw-bold">
+                                <i class="bi bi-calendar-month"></i> Select Month
+                            </label>
+                            <select class="form-control form-control-lg" id="month_year" 
+                                    name="month_year" required>
+                                <option value="">-- Select Month and Year --</option>
+                                {% for year in range(current_date.year - 1, current_date.year + 2) %}
+                                    {% for month in range(1, 13) %}
+                                        {% if year < current_date.year or (year == current_date.year and month <= current_date.month) %}
+                                            <option value="{{ '%04d-%02d' % (year, month) }}">
+                                                {% set months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'] %}
+                                                {{ months[month - 1] }} {{ year }}
+                                            </option>
+                                        {% endif %}
+                                    {% endfor %}
+                                {% endfor %}
+                            </select>
+                            <small class="text-muted">Choose the month for the expense report</small>
+                        </div>
+
+                        <div class="alert alert-info" role="alert">
+                            <i class="bi bi-info-circle"></i>
+                            <strong>Note:</strong> This will generate a PDF containing all approved expenses from the selected month with all signatures included.
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                            <a href="{{ url_for('dashboard') }}" class="btn btn-secondary btn-lg">
+                                <i class="bi bi-x-circle"></i> Cancel
+                            </a>
+                            <button type="submit" class="btn btn-info btn-lg">
+                                <i class="bi bi-download"></i> Generate PDF
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

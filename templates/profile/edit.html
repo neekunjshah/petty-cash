@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Profile - PettyCash NYSA{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="card shadow-lg">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">
+                        <i class="bi bi-person-gear"></i> Edit Profile
+                    </h4>
+                </div>
+                <div class="card-body p-4">
+                    <form method="POST">
+                        <!-- Full Name -->
+                        <div class="mb-3">
+                            <label for="full_name" class="form-label fw-bold">
+                                <i class="bi bi-person"></i> Full Name
+                            </label>
+                            <input type="text" class="form-control form-control-lg" id="full_name" 
+                                   name="full_name" value="{{ current_user.full_name }}" required>
+                            <small class="text-muted">Your display name</small>
+                        </div>
+
+                        <!-- Email -->
+                        <div class="mb-3">
+                            <label for="email" class="form-label fw-bold">
+                                <i class="bi bi-envelope"></i> Email Address
+                            </label>
+                            <input type="email" class="form-control form-control-lg" id="email" 
+                                   name="email" value="{{ current_user.email }}" required>
+                            <small class="text-muted">Your login email</small>
+                        </div>
+
+                        <!-- Phone Number for WhatsApp -->
+                        <div class="mb-3">
+                            <label for="phone_number" class="form-label fw-bold">
+                                <i class="bi bi-whatsapp"></i> WhatsApp Number
+                            </label>
+                            <input type="tel" class="form-control form-control-lg" id="phone_number" 
+                                   name="phone_number" value="{{ current_user.phone_number or '' }}" 
+                                   placeholder="+919876543210">
+                            <small class="text-muted">Include country code (e.g., +91 for India). Used for expense notifications.</small>
+                        </div>
+
+                        <hr>
+
+                        <!-- Password Section -->
+                        <h6 class="mb-3">
+                            <i class="bi bi-lock"></i> Change Password (Optional)
+                        </h6>
+
+                        <!-- New Password -->
+                        <div class="mb-3">
+                            <label for="password" class="form-label fw-bold">
+                                New Password
+                            </label>
+                            <input type="password" class="form-control form-control-lg" id="password" 
+                                   name="password" placeholder="Leave blank to keep current password">
+                            <small class="text-muted">Minimum 6 characters</small>
+                        </div>
+
+                        <!-- Confirm Password -->
+                        <div class="mb-4">
+                            <label for="password_confirm" class="form-label fw-bold">
+                                Confirm Password
+                            </label>
+                            <input type="password" class="form-control form-control-lg" id="password_confirm" 
+                                   name="password_confirm" placeholder="Re-enter your new password">
+                        </div>
+
+                        <!-- Buttons -->
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg flex-grow-1">
+                                <i class="bi bi-check-circle"></i> Save Changes
+                            </button>
+                            <a href="{{ url_for('dashboard') }}" class="btn btn-outline-secondary btn-lg">
+                                <i class="bi bi-x-circle"></i> Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Info Box -->
+            <div class="alert alert-info mt-4">
+                <i class="bi bi-info-circle"></i>
+                <strong>Important:</strong> Only change your password if needed. Leave it blank to keep your current password.
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

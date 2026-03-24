@@ -1,0 +1,13 @@
+services:
+  pettycash:
+    build: .
+    ports:
+      - "8084:8084"
+    volumes:
+      - pettycash-data:/app/data
+    env_file:
+      - .env
+    restart: unless-stopped
+
+volumes:
+  pettycash-data:

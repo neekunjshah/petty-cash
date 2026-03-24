@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block title %}Add Money Received - PettyCash NYSA{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+                    <li class="breadcrumb-item active">Add Money Received</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-cash-stack"></i> Add Money Received
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info mb-4">
+                        <i class="bi bi-wallet2"></i> 
+                        <strong>Current Balance:</strong> 
+                        <span class="fs-5">₹{{ "%.2f"|format(current_balance) }}</span>
+                    </div>
+
+                    <form method="POST" action="{{ url_for('add_cash') }}">
+                        <div class="mb-3">
+                            <label for="transaction_date" class="form-label">Date</label>
+                            <input type="date" class="form-control" id="transaction_date" name="transaction_date"
+                                   required value="{{ current_date }}">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="amount" class="form-label">Amount Received (₹)</label>
+                            <div class="input-group">
+                                <span class="input-group-text">₹</span>
+                                <input type="number" class="form-control form-control-lg" 
+                                       id="amount" name="amount" 
+                                       step="0.01" min="0.01" required
+                                       placeholder="0.00">
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="description" class="form-label">Description / Source</label>
+                            <textarea class="form-control" id="description" name="description" 
+                                      rows="3" required
+                                      placeholder="e.g., Monthly petty cash fund, Office allowance, etc."></textarea>
+                            <div class="form-text">Describe where this money came from</div>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-success btn-lg">
+                                <i class="bi bi-plus-circle"></i> Add to Balance
+                            </button>
+                            <a href="{{ url_for('dashboard') }}" class="btn btn-outline-secondary">
+                                <i class="bi bi-arrow-left"></i> Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

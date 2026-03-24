@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block title %}Recycle Bin{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <h2>
+                    <i class="bi bi-trash3"></i> Recycle Bin
+                </h2>
+                <a href="{{ url_for('dashboard') }}" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left"></i> Back to Dashboard
+                </a>
+            </div>
+            <p class="text-muted">
+                Deleted expenses are stored here. You can restore them or permanently delete them.
+                {% if not current_user.is_senior %}
+                <br><small>Note: Only seniors can permanently delete items.</small>
+                {% endif %}
+            </p>
+        </div>
+    </div>
+
+    {% if deleted_expenses %}
+    <div class="row">
+        {% for expense in deleted_expenses %}
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm border-secondary">
+                <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
+                    <span>
+                        <i class="bi bi-receipt"></i> Expense #{{ expense.id }}
+                    </span>
+                    <span class="badge bg-{{ 'success' if expense.status == 'approved' else 'warning' if expense.status == 'pending' else 'danger' }}">
+                        {{ expense.status.upper() }}
+                    </span>
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title text-truncate" title="{{ expense.purpose }}">
+                        {{ expense.purpose[:50] }}{% if expense.purpose|length > 50 %}...{% endif %}
+                    </h5>
+                    <p class="card-text">
+                        <strong>Amount:</strong> <span class="text-success">₹{{ "%.2f"|format(expense.amount) }}</span><br>
+                        <strong>Recipient:</strong> {{ expense.recipient_name }}<br>
+                        <strong>Created by:</strong> {{ expense.creator.full_name }}<br>
+                        <strong>Deleted:</strong> {{ expense.deleted_at.strftime('%Y-%m-%d %H:%M') if expense.deleted_at else 'N/A' }}
+                        {% if expense.deleted_by %}
+                        <br><strong>Deleted by:</strong> {{ expense.deleted_by.full_name }}
+                        {% endif %}
+                    </p>
+                    <div class="d-flex gap-2">
+                        <form method="POST" action="{{ url_for('restore_expense', expense_id=expense.id) }}" class="d-inline">
+                            <button type="submit" class="btn btn-success btn-sm">
+                                <i class="bi bi-arrow-counterclockwise"></i> Restore
+                            </button>
+                        </form>
+                        {% if current_user.is_senior %}
+                        <form method="POST" action="{{ url_for('permanent_delete_expense', expense_id=expense.id) }}" 
+                              class="d-inline" 
+                              onsubmit="return confirm('Are you sure you want to PERMANENTLY delete this expense? This cannot be undone!')">
+                            <button type="submit" class="btn btn-danger btn-sm">
+                                <i class="bi bi-trash"></i> Delete Forever
+                            </button>
+                        </form>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="card shadow-sm">
+        <div class="card-body text-center py-5">
+            <i class="bi bi-trash3 text-muted" style="font-size: 4rem;"></i>
+            <h4 class="mt-3 text-muted">Recycle Bin is Empty</h4>
+            <p class="text-muted">No deleted expenses found.</p>
+            <a href="{{ url_for('dashboard') }}" class="btn btn-primary">
+                <i class="bi bi-arrow-left"></i> Back to Dashboard
+            </a>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

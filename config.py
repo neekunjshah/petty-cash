@@ -3,38 +3,45 @@ Configuration for Flask application
 """
 import os
 from datetime import timedelta
+from dotenv import load_dotenv
 
 basedir = os.path.abspath(os.path.dirname(__file__))
+load_dotenv(os.path.join(basedir, '.env'))
 
 
 class Config:
     """Base configuration"""
-    SECRET_KEY = os.environ.get('SECRET_KEY') or 'dev-secret-key-change-in-production'
+    SECRET_KEY = os.environ.get('SECRET_KEY', 'dev-secret-key-change-in-production')
 
-    # Database
-    # Use /tmp for SQLite on Railway (always writable), instance folder locally
-    if os.environ.get('RAILWAY_ENVIRONMENT'):
-        db_path = os.path.join('/tmp', 'pettycash.db')
-    else:
-        db_path = os.path.join(basedir, 'instance', 'pettycash.db')
+    # Secure cookies in production
+    SESSION_COOKIE_SECURE = bool(os.environ.get('PRODUCTION'))
+    SESSION_COOKIE_HTTPONLY = True
+    SESSION_COOKIE_SAMESITE = 'Lax'
 
-    # Get database URL and configure for psycopg3
-    database_url = os.environ.get('DATABASE_URL') or f'sqlite:///{db_path}'
+    # Database - SQLite
+    # Docker: /app/data/pettycash.db (persistent volume)
+    # Local dev: instance/pettycash.db
+    DATA_DIR = os.environ.get('DATA_DIR', os.path.join(basedir, 'instance'))
+    database_url = os.environ.get('DATABASE_URL', f'sqlite:///{os.path.join(DATA_DIR, "pettycash.db")}')
 
-    # Railway provides postgresql:// but we need postgresql+psycopg:// for psycopg3
+    # Normalize postgresql:// to postgresql+psycopg:// for psycopg3
     if database_url.startswith('postgresql://'):
         database_url = database_url.replace('postgresql://', 'postgresql+psycopg://', 1)
 
     SQLALCHEMY_DATABASE_URI = database_url
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    SQLALCHEMY_ENGINE_OPTIONS = {
+        'pool_pre_ping': True,
+        'pool_recycle': 300,
+        'pool_size': 5,
+        'max_overflow': 10,
+    }
 
     # Session
     PERMANENT_SESSION_LIFETIME = timedelta(hours=24)
 
     # File uploads (signatures)
-    # Use Railway volume for persistent storage, local folder for development
-    if os.environ.get('RAILWAY_ENVIRONMENT'):
-        UPLOAD_FOLDER = '/data/signatures'
-    else:
-        UPLOAD_FOLDER = os.path.join(basedir, 'static', 'signatures')
+    # Docker: /app/data/signatures (persistent volume)
+    # Local dev: static/signatures
+    UPLOAD_FOLDER = os.environ.get('UPLOAD_DIR', os.path.join(basedir, 'static', 'signatures'))
     MAX_CONTENT_LENGTH = 5 * 1024 * 1024  # 5MB max file size

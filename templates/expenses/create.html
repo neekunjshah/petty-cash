@@ -13,7 +13,7 @@
                     </h4>
                 </div>
                 <div class="card-body">
-                    <form method="POST" action="{{ url_for('expense_create') }}">
+                    <form method="POST" action="{{ url_for('expense_create') }}" enctype="multipart/form-data">
                         <div class="mb-3">
                             <label for="purpose" class="form-label">Purpose *</label>
                             <textarea class="form-control" id="purpose" name="purpose" rows="3"
@@ -34,9 +34,15 @@
                         </div>
 
                         <div class="mb-3">
-                            <label for="employee_name" class="form-label">Employee Name *</label>
-                            <input type="text" class="form-control" id="employee_name" name="employee_name"
-                                   required value="{{ current_user.full_name }}" placeholder="Employee who made this expense">
+                            <label for="employee_id" class="form-label">Employee Name *</label>
+                            <select class="form-control" id="employee_id" name="employee_id" required>
+                                <option value="">-- Select Employee --</option>
+                                {% for employee in employees %}
+                                    <option value="{{ employee.id }}" {% if employee.id == current_user.id %}selected{% endif %}>
+                                        {{ employee.full_name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
                             <div class="form-text">The employee who incurred this expense</div>
                         </div>
 
@@ -47,35 +53,70 @@
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label">Recipient Signature *</label>
-                            <div class="card">
-                                <div class="card-body">
-                                    <canvas id="recipient-canvas" class="signature-canvas w-100" style="height: 150px;"></canvas>
-                                    <input type="hidden" id="recipient_signature" name="recipient_signature">
-                                    <div class="mt-2">
-                                        <button type="button" class="btn btn-sm btn-outline-secondary" onclick="clearCanvas('recipient')">
-                                            <i class="bi bi-x-circle"></i> Clear
-                                        </button>
+                            <label for="attachment" class="form-label">
+                                <i class="bi bi-paperclip"></i> Attach Bill/Receipt (Optional)
+                            </label>
+                            <input type="file" class="form-control" id="attachment" name="attachment"
+                                   accept="image/*,.pdf" onchange="previewAttachment(this)">
+                            <div class="form-text">Upload a photo of the bill or receipt (JPG, PNG, PDF - max 5MB)</div>
+                            <div id="attachment-preview" class="mt-2" style="display: none;">
+                                <div class="card">
+                                    <div class="card-body p-2">
+                                        <div class="d-flex align-items-center justify-content-between">
+                                            <div class="d-flex align-items-center">
+                                                <i class="bi bi-file-earmark-image text-primary me-2"></i>
+                                                <span id="attachment-name" class="text-truncate" style="max-width: 200px;"></span>
+                                            </div>
+                                            <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeAttachment()">
+                                                <i class="bi bi-x"></i> Remove
+                                            </button>
+                                        </div>
+                                        <img id="attachment-image" class="img-fluid mt-2 rounded" style="max-height: 200px; display: none;">
                                     </div>
                                 </div>
                             </div>
-                            <div class="form-text">Recipient must sign here</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Recipient Signature *</label>
+                            <div class="signature-container">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <canvas id="recipient-canvas" class="signature-canvas w-100" style="height: 150px;"></canvas>
+                                        <input type="hidden" id="recipient_signature" name="recipient_signature">
+                                        <div class="mt-2">
+                                            <button type="button" class="btn btn-sm btn-primary" onclick="enterFocusMode('recipient')">
+                                                <i class="bi bi-fullscreen"></i> Focus Mode
+                                            </button>
+                                            <button type="button" class="btn btn-sm btn-outline-secondary ms-2" onclick="clearCanvas('recipient')">
+                                                <i class="bi bi-x-circle"></i> Clear
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-text"><i class="bi bi-lightbulb"></i> Tip: Use Focus Mode to avoid accidentally hitting navigation buttons</div>
+                            </div>
                         </div>
 
                         <div class="mb-3">
                             <label class="form-label">Your Signature (Employee) *</label>
-                            <div class="card">
-                                <div class="card-body">
-                                    <canvas id="employee-canvas" class="signature-canvas w-100" style="height: 150px;"></canvas>
-                                    <input type="hidden" id="employee_signature" name="employee_signature">
-                                    <div class="mt-2">
-                                        <button type="button" class="btn btn-sm btn-outline-secondary" onclick="clearCanvas('employee')">
-                                            <i class="bi bi-x-circle"></i> Clear
-                                        </button>
+                            <div class="signature-container">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <canvas id="employee-canvas" class="signature-canvas w-100" style="height: 150px;"></canvas>
+                                        <input type="hidden" id="employee_signature" name="employee_signature">
+                                        <div class="mt-2">
+                                            <button type="button" class="btn btn-sm btn-primary" onclick="enterFocusMode('employee')">
+                                                <i class="bi bi-fullscreen"></i> Focus Mode
+                                            </button>
+                                            <button type="button" class="btn btn-sm btn-outline-secondary ms-2" onclick="clearCanvas('employee')">
+                                                <i class="bi bi-x-circle"></i> Clear
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
+                                <div class="form-text"><i class="bi bi-lightbulb"></i> Tip: Use Focus Mode to avoid accidentally hitting navigation buttons</div>
                             </div>
-                            <div class="form-text">Sign here to confirm</div>
                         </div>
 
                         <div class="d-grid gap-2">
@@ -116,6 +157,50 @@
         }
 
         return true;
+    }
+
+    // Attachment preview functions
+    function previewAttachment(input) {
+        const preview = document.getElementById('attachment-preview');
+        const nameSpan = document.getElementById('attachment-name');
+        const imagePreview = document.getElementById('attachment-image');
+        
+        if (input.files && input.files[0]) {
+            const file = input.files[0];
+            
+            // Check file size (5MB limit)
+            if (file.size > 5 * 1024 * 1024) {
+                alert('File size must be less than 5MB');
+                input.value = '';
+                return;
+            }
+            
+            nameSpan.textContent = file.name;
+            preview.style.display = 'block';
+            
+            // Show image preview for image files
+            if (file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    imagePreview.src = e.target.result;
+                    imagePreview.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            } else {
+                imagePreview.style.display = 'none';
+            }
+        }
+    }
+
+    function removeAttachment() {
+        const input = document.getElementById('attachment');
+        const preview = document.getElementById('attachment-preview');
+        const imagePreview = document.getElementById('attachment-image');
+        
+        input.value = '';
+        preview.style.display = 'none';
+        imagePreview.style.display = 'none';
+        imagePreview.src = '';
     }
 </script>
 {% endblock %}
