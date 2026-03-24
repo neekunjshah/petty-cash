@@ -5,6 +5,7 @@ from datetime import datetime
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
+from sqlalchemy.orm import deferred
 
 db = SQLAlchemy()
 
@@ -18,7 +19,7 @@ class User(UserMixin, db.Model):
     email = db.Column(db.String(120), unique=True, nullable=False)
     password_hash = db.Column(db.String(256), nullable=False)
     full_name = db.Column(db.String(120), nullable=False)
-    role = db.Column(db.String(20), nullable=False)  # 'employee' or 'senior'
+    role = db.Column(db.String(20), nullable=False, index=True)  # 'employee' or 'senior'
     phone_number = db.Column(db.String(20), nullable=True)  # WhatsApp number with country code e.g. +919876543210
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
@@ -62,23 +63,23 @@ class Expense(db.Model):
     date = db.Column(db.DateTime, default=datetime.utcnow)
 
     # Status: draft, pending, approved, rejected
-    status = db.Column(db.String(20), default='draft', nullable=False)
+    status = db.Column(db.String(20), default='draft', nullable=False, index=True)
 
     # Creator (employee who created the expense)
-    creator_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    creator_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False, index=True)
 
     # Signature file paths (legacy - for backwards compatibility)
     recipient_signature = db.Column(db.String(256), nullable=True)
     employee_signature = db.Column(db.String(256), nullable=True)
     senior_signature = db.Column(db.String(256), nullable=True)
     
-    # Signature data stored as base64 (persistent storage)
-    recipient_signature_data = db.Column(db.Text, nullable=True)
-    employee_signature_data = db.Column(db.Text, nullable=True)
-    senior_signature_data = db.Column(db.Text, nullable=True)
-    
-    # Attachment (bill/receipt image) stored as base64 (optional)
-    attachment_data = db.Column(db.Text, nullable=True)
+    # Signature data stored as base64 (persistent storage) — deferred to avoid loading on list views
+    recipient_signature_data = deferred(db.Column(db.Text, nullable=True))
+    employee_signature_data = deferred(db.Column(db.Text, nullable=True))
+    senior_signature_data = deferred(db.Column(db.Text, nullable=True))
+
+    # Attachment (bill/receipt image) stored as base64 (optional) — deferred
+    attachment_data = deferred(db.Column(db.Text, nullable=True))
     attachment_filename = db.Column(db.String(256), nullable=True)
 
     # Approval information
@@ -87,11 +88,11 @@ class Expense(db.Model):
     rejection_reason = db.Column(db.String(500), nullable=True)
 
     # Timestamps
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow, index=True)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-    
+
     # Soft delete (recycle bin)
-    is_deleted = db.Column(db.Boolean, default=False, nullable=False)
+    is_deleted = db.Column(db.Boolean, default=False, nullable=False, index=True)
     deleted_at = db.Column(db.DateTime, nullable=True)
     deleted_by_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
 
@@ -135,7 +136,7 @@ class CashTransaction(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     
     # Transaction type: 'received' for money in, 'expense' for money out
-    transaction_type = db.Column(db.String(20), nullable=False)
+    transaction_type = db.Column(db.String(20), nullable=False, index=True)
     
     # Amount (positive for received, negative for expenses deducted)
     amount = db.Column(db.Float, nullable=False)
@@ -153,8 +154,8 @@ class CashTransaction(db.Model):
     transaction_date = db.Column(db.DateTime, default=datetime.utcnow)
     
     # Timestamps
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    
+    created_at = db.Column(db.DateTime, default=datetime.utcnow, index=True)
+
     # Relationships
     recorded_by = db.relationship('User', foreign_keys=[recorded_by_id])
     expense = db.relationship('Expense', foreign_keys=[expense_id])

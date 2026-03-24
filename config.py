@@ -4,6 +4,7 @@ Configuration for Flask application
 import os
 from datetime import timedelta
 from dotenv import load_dotenv
+from sqlalchemy.pool import NullPool
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 load_dotenv(os.path.join(basedir, '.env'))
@@ -30,12 +31,21 @@ class Config:
 
     SQLALCHEMY_DATABASE_URI = database_url
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    SQLALCHEMY_ENGINE_OPTIONS = {
-        'pool_pre_ping': True,
-        'pool_recycle': 300,
-        'pool_size': 5,
-        'max_overflow': 10,
-    }
+
+    # SQLite needs NullPool (no connection pooling) to avoid "database is locked" errors
+    # PostgreSQL can use standard pooling
+    if database_url.startswith('sqlite'):
+        SQLALCHEMY_ENGINE_OPTIONS = {
+            'poolclass': NullPool,
+            'connect_args': {'timeout': 15, 'check_same_thread': False},
+        }
+    else:
+        SQLALCHEMY_ENGINE_OPTIONS = {
+            'pool_pre_ping': True,
+            'pool_recycle': 300,
+            'pool_size': 5,
+            'max_overflow': 10,
+        }
 
     # Session
     PERMANENT_SESSION_LIFETIME = timedelta(hours=24)

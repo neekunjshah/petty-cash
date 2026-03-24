@@ -9,6 +9,7 @@ from flask_login import LoginManager, login_user, logout_user, login_required, c
 from werkzeug.security import generate_password_hash
 from flask_cors import CORS
 
+from sqlalchemy.orm import joinedload
 from config import Config
 from models import db, User, Expense, CashTransaction
 from whatsapp_service import notify_expense_submitted, notify_expense_approved, notify_expense_rejected
@@ -27,6 +28,17 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
 login_manager.login_message = 'Please log in to access this page.'
+
+# Enable WAL mode for SQLite — better concurrent reads/writes, prevents data loss
+if app.config['SQLALCHEMY_DATABASE_URI'].startswith('sqlite'):
+    from sqlalchemy import event
+    with app.app_context():
+        @event.listens_for(db.engine, 'connect')
+        def set_sqlite_pragma(dbapi_connection, connection_record):
+            cursor = dbapi_connection.cursor()
+            cursor.execute('PRAGMA journal_mode=WAL')
+            cursor.execute('PRAGMA synchronous=NORMAL')
+            cursor.close()
 
 
 # Database session management
@@ -185,7 +197,7 @@ def dashboard():
     
     if current_user.is_senior:
         # Seniors see approval queue (exclude deleted)
-        pending_expenses = Expense.query.filter_by(status='pending', is_deleted=False).order_by(Expense.created_at.desc()).all()
+        pending_expenses = Expense.query.options(joinedload(Expense.creator)).filter_by(status='pending', is_deleted=False).order_by(Expense.created_at.desc()).all()
         all_employees = User.query.filter_by(role='employee').order_by(User.full_name).all()
         all_seniors = User.query.filter_by(role='senior').order_by(User.full_name).all()
         # Count deleted expenses for recycle bin badge
@@ -201,7 +213,7 @@ def dashboard():
                              deleted_count=deleted_count)
     else:
         # Employees see their expenses (exclude deleted)
-        my_expenses = Expense.query.filter_by(creator_id=current_user.id, is_deleted=False).order_by(Expense.created_at.desc()).all()
+        my_expenses = Expense.query.options(joinedload(Expense.creator), joinedload(Expense.approved_by)).filter_by(creator_id=current_user.id, is_deleted=False).order_by(Expense.created_at.desc()).all()
         # Count their deleted expenses for recycle bin badge
         deleted_count = Expense.query.filter_by(creator_id=current_user.id, is_deleted=True).count()
         return render_template('dashboard.html', 
@@ -430,16 +442,17 @@ def expense_list():
     """List all expenses (filtered by status)"""
     status = request.args.get('status', 'all')
 
+    base_query = Expense.query.options(joinedload(Expense.creator), joinedload(Expense.approved_by))
     if status == 'all':
         if current_user.is_senior:
-            expenses = Expense.query.filter_by(is_deleted=False).order_by(Expense.created_at.desc()).all()
+            expenses = base_query.filter_by(is_deleted=False).order_by(Expense.created_at.desc()).all()
         else:
-            expenses = Expense.query.filter_by(creator_id=current_user.id, is_deleted=False).order_by(Expense.created_at.desc()).all()
+            expenses = base_query.filter_by(creator_id=current_user.id, is_deleted=False).order_by(Expense.created_at.desc()).all()
     else:
         if current_user.is_senior:
-            expenses = Expense.query.filter_by(status=status, is_deleted=False).order_by(Expense.created_at.desc()).all()
+            expenses = base_query.filter_by(status=status, is_deleted=False).order_by(Expense.created_at.desc()).all()
         else:
-            expenses = Expense.query.filter_by(creator_id=current_user.id, status=status, is_deleted=False).order_by(Expense.created_at.desc()).all()
+            expenses = base_query.filter_by(creator_id=current_user.id, status=status, is_deleted=False).order_by(Expense.created_at.desc()).all()
 
     return render_template('expenses/list.html', expenses=expenses, status=status)
 
@@ -873,18 +886,18 @@ def export_csv():
     from io import StringIO
     from flask import make_response
 
-    # Get expenses based on role (exclude deleted)
+    # Get expenses based on role (exclude deleted) — eager load relationships
     if current_user.is_senior:
-        expenses = Expense.query.filter_by(status='approved', is_deleted=False).order_by(Expense.created_at.desc()).all()
+        expenses = Expense.query.options(joinedload(Expense.creator), joinedload(Expense.approved_by)).filter_by(status='approved', is_deleted=False).order_by(Expense.created_at.desc()).all()
     else:
-        expenses = Expense.query.filter_by(creator_id=current_user.id, is_deleted=False).order_by(Expense.created_at.desc()).all()
+        expenses = Expense.query.options(joinedload(Expense.creator), joinedload(Expense.approved_by)).filter_by(creator_id=current_user.id, is_deleted=False).order_by(Expense.created_at.desc()).all()
 
     # Create CSV
     si = StringIO()
     writer = csv.writer(si)
 
     # Header
-    writer.writerow(['ID', 'Date', 'Purpose', 'Amount', 'Recipient', 'Status', 'Created By', 'Approved By', 'Approved Date'])
+    writer.writerow(['ID', 'Date', 'Purpose', 'Amount (₹)', 'Recipient', 'Status', 'Created By', 'Approved By', 'Approved Date'])
 
     # Data
     for expense in expenses:
@@ -892,7 +905,7 @@ def export_csv():
             expense.id,
             expense.created_at.strftime('%Y-%m-%d %H:%M'),
             expense.purpose,
-            f'{expense.amount:.2f}',
+            f'₹{expense.amount:.2f}',
             expense.recipient_name,
             expense.status.upper(),
             expense.creator.full_name,
@@ -900,10 +913,10 @@ def export_csv():
             expense.approved_at.strftime('%Y-%m-%d %H:%M') if expense.approved_at else 'N/A'
         ])
 
-    # Create response
-    output = make_response(si.getvalue())
+    # Create response with UTF-8 BOM for Excel compatibility
+    output = make_response('\ufeff' + si.getvalue())
     output.headers["Content-Disposition"] = "attachment; filename=expenses.csv"
-    output.headers["Content-type"] = "text/csv"
+    output.headers["Content-type"] = "text/csv; charset=utf-8"
 
     return output
 
@@ -939,8 +952,10 @@ def export_monthly_csv():
         ).scalar()
         opening_balance = opening_balance_result if opening_balance_result else 0.0
 
-        # Get all transactions for the month (both received and expense)
-        transactions = CashTransaction.query.filter(
+        # Get all transactions for the month (both received and expense) — eager load linked expense+creator
+        transactions = CashTransaction.query.options(
+            joinedload(CashTransaction.expense).joinedload(Expense.creator)
+        ).filter(
             CashTransaction.created_at >= first_day,
             CashTransaction.created_at <= last_day_end
         ).order_by(CashTransaction.created_at).all()
@@ -956,11 +971,11 @@ def export_monthly_csv():
         writer.writerow([])
         
         # Opening balance row
-        writer.writerow(['Opening Balance', '', '', f'{opening_balance:.2f}'])
+        writer.writerow(['Opening Balance', '', '', f'₹{opening_balance:.2f}'])
         writer.writerow([])
         
         # Column headers
-        writer.writerow(['Date', 'Type', 'Description', 'Recipient Name', 'Employee Name', 'Amount', 'Running Balance'])
+        writer.writerow(['Date', 'Type', 'Description', 'Recipient Name', 'Employee Name', 'Amount (₹)', 'Running Balance (₹)'])
         
         # Calculate running balance starting from opening balance
         running_balance = opening_balance
@@ -982,21 +997,13 @@ def export_monthly_csv():
                 employee_name = '-'
             else:
                 total_expenses += abs(txn.amount)
-                # For expense: get recipient and employee from linked expense
-                if txn.expense_id:
-                    expense = Expense.query.get(txn.expense_id)
-                    if expense:
-                        recipient_name = expense.recipient_name
-                        employee_name = expense.creator.full_name if expense.creator else 'N/A'
-                    else:
-                        recipient_name = 'N/A'
-                        employee_name = 'N/A'
+                # For expense: get recipient and employee from linked expense (eager loaded)
+                if txn.expense:
+                    recipient_name = txn.expense.recipient_name
+                    employee_name = txn.expense.creator.full_name if txn.expense.creator else 'N/A'
                 else:
                     recipient_name = 'N/A'
                     employee_name = 'N/A'
-            
-            # Amount: positive for received, negative for expense
-            amount_display = f'{txn.amount:.2f}'
             
             writer.writerow([
                 txn.created_at.strftime('%Y-%m-%d'),
@@ -1004,8 +1011,8 @@ def export_monthly_csv():
                 txn.description,
                 recipient_name,
                 employee_name,
-                amount_display,
-                f'{running_balance:.2f}'
+                f'₹{txn.amount:.2f}',
+                f'₹{running_balance:.2f}'
             ])
         
         writer.writerow([])
@@ -1013,13 +1020,13 @@ def export_monthly_csv():
         # Summary section
         closing_balance = running_balance
         writer.writerow(['Summary'])
-        writer.writerow(['Total Received', '', '', f'{total_received:.2f}'])
-        writer.writerow(['Total Expenses', '', '', f'-{total_expenses:.2f}'])
-        writer.writerow(['Closing Balance', '', '', f'{closing_balance:.2f}'])
+        writer.writerow(['Total Received', '', '', f'₹{total_received:.2f}'])
+        writer.writerow(['Total Expenses', '', '', f'-₹{total_expenses:.2f}'])
+        writer.writerow(['Closing Balance', '', '', f'₹{closing_balance:.2f}'])
 
-        output = make_response(si.getvalue())
+        output = make_response('\ufeff' + si.getvalue())
         output.headers["Content-Disposition"] = f"attachment; filename=cash_report_{year}_{month:02d}.csv"
-        output.headers["Content-type"] = "text/csv"
+        output.headers["Content-type"] = "text/csv; charset=utf-8"
         return output
 
     current_date = datetime.now()
@@ -1056,8 +1063,10 @@ def export_monthly_pdf():
         # Include end of last day (23:59:59)
         last_day_end = last_day.replace(hour=23, minute=59, second=59)
 
-        # Get all approved expenses for the month (exclude deleted)
-        expenses = Expense.query.filter(
+        # Get all approved expenses for the month (exclude deleted) — eager load relationships
+        expenses = Expense.query.options(
+            joinedload(Expense.creator), joinedload(Expense.approved_by)
+        ).filter(
             Expense.status == 'approved',
             Expense.is_deleted == False,
             Expense.approved_at >= first_day,
@@ -1098,7 +1107,7 @@ def export_monthly_pdf():
         # Summary table
         total_amount = sum(expense.amount for expense in expenses)
         summary_data = [
-            ['Total Expenses:', f'{total_amount:.2f}'],
+            ['Total Expenses:', f'₹{total_amount:.2f}'],
             ['Number of Expenses:', str(len(expenses))],
             ['Report Date:', datetime.now().strftime('%Y-%m-%d')],
         ]
@@ -1127,7 +1136,7 @@ def export_monthly_pdf():
             data = [
                 ['Date:', expense.approved_at.strftime('%Y-%m-%d %H:%M')],
                 ['Purpose:', expense.purpose],
-                ['Amount:', f'{expense.amount:.2f}'],
+                ['Amount:', f'₹{expense.amount:.2f}'],
                 ['Recipient:', expense.recipient_name],
                 ['Employee:', expense.creator.full_name],
                 ['Approved By:', expense.approved_by.full_name if expense.approved_by else 'N/A'],
@@ -1231,7 +1240,9 @@ def export_monthly_pdf():
 @login_required
 def export_pdf(expense_id):
     """Export single expense to PDF"""
-    expense = Expense.query.get_or_404(expense_id)
+    expense = Expense.query.options(
+        joinedload(Expense.creator), joinedload(Expense.approved_by)
+    ).get_or_404(expense_id)
 
     # Authorization check
     if not current_user.is_senior and expense.creator_id != current_user.id:
@@ -1271,7 +1282,7 @@ def export_pdf(expense_id):
         ['Date:', expense.created_at.strftime('%Y-%m-%d %H:%M')],
         ['Status:', expense.status.upper()],
         ['Purpose:', expense.purpose],
-        ['Amount:', f'{expense.amount:.2f}'],
+        ['Amount:', f'₹{expense.amount:.2f}'],
         ['Recipient:', expense.recipient_name],
         ['Created By:', expense.creator.full_name],
     ]
@@ -1334,7 +1345,7 @@ def export_pdf(expense_id):
     employee_img = get_signature_image(expense.employee_signature_data, expense.employee_signature)
     if employee_img:
         sig_data.append(['Employee:', employee_img])
-        sig_data.append(['', Paragraph(expense.employee_name, styles['Normal'])])
+        sig_data.append(['', Paragraph(expense.creator.full_name if expense.creator else expense.employee_name, styles['Normal'])])
 
     senior_img = get_signature_image(expense.senior_signature_data, expense.senior_signature)
     if senior_img:
