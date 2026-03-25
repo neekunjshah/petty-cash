@@ -5,7 +5,7 @@ const CACHE_NAME = 'pettycash-v1';
 const PRECACHE_URLS = [
   '/',
   '/static/css/app.css',
-  '/static/images/logo.png',
+  '/static/images/icon-192x192.png',
   '/static/manifest.json',
   'https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css',
   'https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js',
