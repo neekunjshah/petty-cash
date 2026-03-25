@@ -983,11 +983,11 @@ def export_monthly_csv():
         writer.writerow([])
         
         # Opening balance row
-        writer.writerow(['Opening Balance', '', '', f'₹{opening_balance:.2f}'])
+        writer.writerow(['Opening Balance', '', '', f'{opening_balance:.2f}'])
         writer.writerow([])
-        
+
         # Column headers
-        writer.writerow(['Date', 'Type', 'Description', 'Recipient Name', 'Employee Name', 'Amount (₹)', 'Running Balance (₹)'])
+        writer.writerow(['Date', 'Type', 'Description', 'Recipient Name', 'Employee Name', 'Amount', 'Running Balance'])
         
         # Calculate running balance starting from opening balance
         running_balance = opening_balance
@@ -1017,17 +1017,14 @@ def export_monthly_csv():
                     recipient_name = 'N/A'
                     employee_name = 'N/A'
             
-            # Show expense amounts as positive (Type column already indicates deduction)
-            display_amount = abs(txn.amount) if txn.transaction_type == 'expense' else txn.amount
-
             writer.writerow([
                 txn.created_at.strftime('%Y-%m-%d'),
                 txn_type,
                 txn.description,
                 recipient_name,
                 employee_name,
-                f'₹{display_amount:.2f}',
-                f'₹{running_balance:.2f}'
+                f'{txn.amount:.2f}',
+                f'{running_balance:.2f}'
             ])
 
         writer.writerow([])
@@ -1035,10 +1032,9 @@ def export_monthly_csv():
         # Summary section
         closing_balance = opening_balance + total_received - total_expenses
         writer.writerow(['Summary'])
-        writer.writerow(['Opening Balance', '', '', '', '', f'₹{opening_balance:.2f}'])
-        writer.writerow(['Total Received (+)', '', '', '', '', f'₹{total_received:.2f}'])
-        writer.writerow(['Total Expenses (-)', '', '', '', '', f'₹{total_expenses:.2f}'])
-        writer.writerow(['Closing Balance', '', '', '', '', f'₹{closing_balance:.2f}'])
+        writer.writerow(['Total Received', '', '', f'{total_received:.2f}'])
+        writer.writerow(['Total Expenses', '', '', f'{-total_expenses:.2f}'])
+        writer.writerow(['Closing Balance', '', '', f'{closing_balance:.2f}'])
 
         output = make_response('\ufeff' + si.getvalue())
         output.headers["Content-Disposition"] = f"attachment; filename=cash_report_{year}_{month:02d}.csv"
