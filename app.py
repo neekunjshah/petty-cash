@@ -51,6 +51,13 @@ def cache_bust_static(endpoint, values):
         values['v'] = app_version
 
 
+@app.after_request
+def add_cache_headers(response):
+    if request.path.startswith('/static/'):
+        response.headers['Cache-Control'] = 'public, max-age=31536000'
+    return response
+
+
 # Database session management
 @app.teardown_appcontext
 def shutdown_session(exception=None):
@@ -603,7 +610,10 @@ def expense_create():
 @login_required
 def expense_detail(expense_id):
     """View expense details"""
-    expense = Expense.query.get_or_404(expense_id)
+    expense = Expense.query.options(
+        joinedload(Expense.creator),
+        joinedload(Expense.approved_by)
+    ).get_or_404(expense_id)
 
     # Authorization check
     if not current_user.is_senior and expense.creator_id != current_user.id:
