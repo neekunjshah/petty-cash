@@ -7,8 +7,6 @@ from datetime import datetime
 from flask import Flask, render_template, redirect, url_for, flash, request, make_response, jsonify
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash
-from flask_cors import CORS
-
 from sqlalchemy.orm import joinedload
 from config import Config
 from models import db, User, Expense, CashTransaction
@@ -17,7 +15,6 @@ from whatsapp_service import notify_expense_submitted, notify_expense_approved, 
 # Initialize Flask app
 app = Flask(__name__)
 app.config.from_object(Config)
-CORS(app)
 
 # Ensure upload folder exists (do this early, not just in __main__)
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)

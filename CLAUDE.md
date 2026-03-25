@@ -71,10 +71,9 @@ python
   - `Expense`: Tracks status, three signature file paths, approval metadata
 
 - **Config** (`config.py`):
-  - Environment-aware configuration for Railway deployment
-  - Handles PostgreSQL URL conversion for psycopg3
-  - Switches between `/tmp` (Railway) and `instance/` (local) for database
-  - Switches between `/data/signatures` (Railway volume) and `static/signatures` (local)
+  - Environment-aware configuration for Docker/Hetzner VPS deployment
+  - Switches between `/app/data` (Docker volume) and `instance/` (local) for database
+  - Switches between `/app/data/signatures` (Docker volume) and `static/signatures` (local)
 
 ### Digital Signature System
 - **HTML5 Canvas** (`static/js/signature.js`): Capture signatures as base64 data URLs
@@ -89,13 +88,10 @@ python
 
 ## Database
 
-### SQLite (Development)
-- Location: `instance/pettycash.db`
+### SQLite
+- Local dev: `instance/pettycash.db`
+- Docker: `/app/data/pettycash.db` (persistent volume)
 - Auto-created on first run with seed data
-
-### PostgreSQL (Production)
-- Set `DATABASE_URL` environment variable
-- Config automatically converts `postgresql://` → `postgresql+psycopg://` for psycopg3
 
 ### Key Relationships
 - `User.expenses_created` → `Expense.creator` (one-to-many)
@@ -124,5 +120,4 @@ if not current_user.is_senior:
 ### Deployment Considerations
 - Change `SECRET_KEY` in production (use environment variable)
 - Disable debug mode: `app.run(debug=False, ...)`
-- For Railway: Database uses `/tmp` (ephemeral), signatures use `/data` (volume-mounted)
 - Session lifetime: 24 hours (configurable in `config.py`)
